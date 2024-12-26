@@ -52,9 +52,9 @@ const GetAllActivities = async (req, res) => {
 // Create new activity
 const CreateNewActivity = async (req, res) => {
   try {
-    const { body, files } = req; // Data yang dikirim dari client (request body)
+    const { body } = req; // Data yang dikirim dari client (request body)
     const baseUrl = `${req.protocol}://${req.get('host')}`;
-    const newActivity = await CreateActivity(body, files, baseUrl);
+    const newActivity = await CreateActivity(body, baseUrl);
 
     res.status(StatusCodes.CREATED).json(new BaseResponse({
       status: StatusCodes.CREATED,
@@ -74,9 +74,8 @@ const CreateNewActivity = async (req, res) => {
 const UpdateActivityById = async (req, res) => {
   try {
     const { id } = req.params;
-    const { body, files } = req;
-    const baseUrl = `${req.protocol}://${req.get('host')}`;
-    const updatedActivity = await UpdateActivity(id, body, files, baseUrl);
+    const { body } = req;
+    const updatedActivity = await UpdateActivity(id, body);
 
     res.status(StatusCodes.OK).json(new BaseResponse({
       status: StatusCodes.OK,

@@ -12,8 +12,8 @@ const router = Router();
 
 router.get('', [], GetAllActivities);
 router.get('/:id', [], GetActivityById);
-router.post('', upload.fields([{ name: 'imageActivity', maxCount: 1 }]), CreateNewActivity);
-router.put('/:id', upload.fields([{ name: 'imageActivity', maxCount: 1 }]), UpdateActivityById);
+router.post('', [], CreateNewActivity);
+router.put('/:id', [], UpdateActivityById);
 router.delete('/:id', [], DeleteActivityById);
 
 module.exports = router;

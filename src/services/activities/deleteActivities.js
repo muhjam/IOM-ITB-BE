@@ -17,19 +17,6 @@ const DeleteActivities = async (id) => {
       };
     }
 
-    // If an image file URL exists, extract the file name and delete it
-    if (activity.image) {
-      const imageFileName = activity.image.split('/').pop(); // Get the file name from the URL
-
-      // Define the path to the storage directory and the file
-      const imagePath = path.join(__dirname, '../../storage', imageFileName);
-
-      // Delete the file if it exists
-      if (fs.existsSync(imagePath)) {
-        fs.unlinkSync(imagePath);
-      }
-    }
-
     // Delete the activity
     await activity.destroy({ transaction });
 
