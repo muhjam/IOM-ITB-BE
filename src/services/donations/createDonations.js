@@ -32,7 +32,7 @@ const CreateDonations = async (body) => {
         proof,
         notification,
         amount,
-        option: {
+        options: {
           nameIsHidden: nameIsHidden
         }, 
       },

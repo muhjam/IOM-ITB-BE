@@ -34,7 +34,7 @@ const UpdateDonations = async (id, body) => {
         notification: notification || donation.notification,
         proof: proof || donation.proof,
         amount: amount || donation.amount,
-        option: {
+        options: {
           ...donation.option,
           nameIsHidden: nameIsHidden !== undefined ? nameIsHidden : donation.option?.nameIsHidden,
         },

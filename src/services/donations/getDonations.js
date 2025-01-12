@@ -12,7 +12,7 @@ const GetDonations = async ({id = null, query = {}, search = '', isAdmin = false
       }
 
       // Check if the name should be hidden
-      if (donation.option?.nameIsHidden && !isAdmin) {
+      if (donation.options?.nameIsHidden && !isAdmin) {
         donation.name = '*'.repeat(donation.name.length); // Replace name with asterisks
       }
 
@@ -44,7 +44,7 @@ const GetDonations = async ({id = null, query = {}, search = '', isAdmin = false
 
     // Replace names with asterisks for donations where nameIsHidden is true
     const processedRows = isAdmin ? rows : rows.map(donation => {
-      if (donation.option?.nameIsHidden) {
+      if (donation.options?.nameIsHidden) {
         return {
           ...donation.toJSON(),
           name: '*'.repeat(donation.name.length), // Replace name with asterisks
