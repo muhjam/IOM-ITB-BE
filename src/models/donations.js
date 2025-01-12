@@ -24,7 +24,7 @@ module.exports = (sequelize, DataTypes) => {
       });
     }
   }
-  
+
   Donations.init({
     id: {
       type: DataTypes.INTEGER,
@@ -48,8 +48,16 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: true
     },
     notification: {
-      type: DataTypes.ENUM('Email', 'Whatsapp'),
+      type: DataTypes.JSON,
       allowNull: false
+    },
+    amount: {
+      type: DataTypes.FLOAT,  // Bisa menggunakan INTEGER jika jumlah donasi berupa bilangan bulat
+      allowNull: true
+    },
+    options: {
+      type: DataTypes.JSON,  // Menyimpan data tambahan dalam bentuk JSON
+      allowNull: true
     }
   }, {
     sequelize,

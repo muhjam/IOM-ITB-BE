@@ -2,7 +2,7 @@ const { Donations } = require('../../models');
 const { Op } = require('sequelize');
 
 // Add an id parameter for specific donation retrieval
-const GetDonations = async (id = null, query = {}, search = '') => {
+const GetDonations = async ({id = null, query = {}, search = '', isAdmin = false}) => {
   // If id is provided, return the donation based on the id
   if (id) {
     try {
@@ -10,6 +10,12 @@ const GetDonations = async (id = null, query = {}, search = '') => {
       if (!donation) {
         throw new Error(`Donation with id ${id} not found`);
       }
+
+      // Check if the name should be hidden
+      if (donation.option?.nameIsHidden && !isAdmin) {
+        donation.name = '*'.repeat(donation.name.length); // Replace name with asterisks
+      }
+
       return donation; // Return donation details
     } catch (error) {
       throw new Error(`Failed to retrieve donation data: ${error.message}`);
@@ -36,8 +42,19 @@ const GetDonations = async (id = null, query = {}, search = '') => {
   try {
     const { rows, count } = await Donations.findAndCountAll(options);
 
+    // Replace names with asterisks for donations where nameIsHidden is true
+    const processedRows = isAdmin ? rows : rows.map(donation => {
+      if (donation.option?.nameIsHidden) {
+        return {
+          ...donation.toJSON(),
+          name: '*'.repeat(donation.name.length), // Replace name with asterisks
+        };
+      }
+      return donation.toJSON();
+    });
+
     return {
-      data: rows,
+      data: processedRows,
       total: count,
       currentPage: page,
       totalPages: Math.ceil(count / limit),

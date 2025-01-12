@@ -61,8 +61,8 @@ const GetDonationByEmail = async (req, res) => {
 const GetAllDonations = async (req, res) => {
   try {
     const { search } = req.query;
-
-    const donations = await GetDonation(null, search);
+    const isAdmin = req.path === "/admin";
+    const donations = await GetDonation({search, isAdmin});
 
     res.status(StatusCodes.OK).json(new DataTable(donations.data, donations.total));
   } catch (error) {
@@ -76,9 +76,8 @@ const GetAllDonations = async (req, res) => {
 
 const CreateNewDonation = async (req, res) => {
   try {
-    const { body, files } = req;
-    const baseUrl = `${req.protocol}://${req.get('host')}`;
-    const newDonation = await CreateDonation(body, files, baseUrl);
+    const { body } = req;
+    const newDonation = await CreateDonation(body);
 
     res.status(StatusCodes.CREATED).json(new BaseResponse({
       status: StatusCodes.CREATED,
