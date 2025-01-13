@@ -1,8 +1,16 @@
 const { Donations } = require('../../models');
 const { Op } = require('sequelize');
 
+// Utility function to hide words with asterisks
+const hideNamePattern = (name) => {
+  return name
+    .split(' ')
+    .map(word => word[0] + '*'.repeat(word.length - 1))
+    .join(' ');
+};
+
 // Add an id parameter for specific donation retrieval
-const GetDonations = async ({id = null, query = {}, search = '', isAdmin = false}) => {
+const GetDonations = async ({ id = null, query = {}, search = '', isAdmin = false }) => {
   // If id is provided, return the donation based on the id
   if (id) {
     try {
@@ -13,7 +21,7 @@ const GetDonations = async ({id = null, query = {}, search = '', isAdmin = false
 
       // Check if the name should be hidden
       if (donation.options?.nameIsHidden && !isAdmin) {
-        donation.name = '*'.repeat(donation.name.length); // Replace name with asterisks
+        donation.name = hideNamePattern(donation.name); // Replace name with pattern
       }
 
       return donation; // Return donation details
@@ -47,7 +55,7 @@ const GetDonations = async ({id = null, query = {}, search = '', isAdmin = false
       if (donation.options?.nameIsHidden) {
         return {
           ...donation.toJSON(),
-          name: '*'.repeat(donation.name.length), // Replace name with asterisks
+          name: hideNamePattern(donation.name), // Replace name with pattern
         };
       }
       return donation.toJSON();
