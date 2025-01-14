@@ -29,10 +29,10 @@ const GetDonations = async ({ id = null, query = {}, search = '', isAdmin = fals
       throw new Error(`Failed to retrieve donation data: ${error.message}`);
     }
   }
-
+  
   // Logic for retrieving all donations
-  const page = query.page || 1;  // Get page number from query params (default is 1)
-  const limit = query.limit || 10;  // Get limit from query params (default is 10)
+  const page = parseInt(query.page) || 1;  // Get page number from query params (default is 1)
+  const limit = parseInt(query.limit) || 10;  // Get limit from query params (default is 10)
   const offset = (page - 1) * limit;  // Calculate offset based on page and limit
   
   const options = {

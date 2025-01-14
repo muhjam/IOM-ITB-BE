@@ -60,11 +60,38 @@ const GetDonationByEmail = async (req, res) => {
 
 const GetAllDonations = async (req, res) => {
   try {
-    const { search } = req.query;
+    const { search, page = 1, limit = 10 } = req.query;  // Set default page and limit
     const isAdmin = req.path === "/admin";
-    const donations = await GetDonation({search, isAdmin});
 
-    res.status(StatusCodes.OK).json(new DataTable(donations.data, donations.total));
+    // Convert `page` and `limit` to integers
+    const pageNumber = parseInt(page, 10);
+    const pageLimit = parseInt(limit, 10);
+
+    // Get donations data
+    const donations = await GetDonation({
+      query: req.query,
+      search,
+      isAdmin,
+      page: pageNumber,
+      limit: pageLimit,
+    });
+
+    const totalEntries = donations.total;
+    const totalPages = Math.ceil(totalEntries / pageLimit);
+
+    const start = (pageNumber - 1) * pageLimit + 1;
+    const end = Math.min(pageNumber * pageLimit, totalEntries);
+
+    res.status(StatusCodes.OK).json({
+      data: new DataTable(donations.data)?.data,
+      pagination: {
+        currentPage: pageNumber,
+        totalPages,
+        start,
+        end,
+        totalEntries,
+      }
+    });
   } catch (error) {
     const status = error.status || StatusCodes.INTERNAL_SERVER_ERROR;
     res.status(status).json(new BaseResponse({
@@ -73,6 +100,7 @@ const GetAllDonations = async (req, res) => {
     }));
   }
 };
+
 
 const CreateNewDonation = async (req, res) => {
   try {
