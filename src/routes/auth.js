@@ -1,16 +1,12 @@
 const { Router } = require('express');
 const {
-  RegisterUser,
-  LoginUser,
-  LogoutUser
-} = require('../controllers/auth');
-const upload  = require('../middlewares/multer');
-const AuthorizationCheck = require('../middlewares/auth');
-
+  LoginAdmin,
+  GetDataAdmin
+} = require('../controllers/admins');
 const router = Router();
+const JWTValidation = require('../middlewares/auth')
 
-router.post('/register', upload.fields([{ name: 'photo', maxCount: 1 }, { name: 'proof', maxCount: 1 }]), RegisterUser);
-router.post('/login', [], LoginUser);
-router.post('/logout', [ AuthorizationCheck ], LogoutUser);
+router.post('/login', [], LoginAdmin);
+router.get('/me', JWTValidation, GetDataAdmin);
 
 module.exports = router;

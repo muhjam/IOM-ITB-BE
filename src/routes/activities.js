@@ -6,14 +6,14 @@ const {
   UpdateActivityById,
   DeleteActivityById,
 } = require('../controllers/activities');
-const upload  = require('../middlewares/multer');
+ const JWTValidation = require('../middlewares/auth');
 
 const router = Router();
 
 router.get('', [], GetAllActivities);
 router.get('/:id', [], GetActivityById);
-router.post('', [], CreateNewActivity);
-router.put('/:id', [], UpdateActivityById);
-router.delete('/:id', [], DeleteActivityById);
+router.post('', JWTValidation, CreateNewActivity);
+router.put('/:id', JWTValidation, UpdateActivityById);
+router.delete('/:id', JWTValidation, DeleteActivityById);
 
 module.exports = router;

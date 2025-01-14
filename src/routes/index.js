@@ -4,6 +4,7 @@ const router = express.Router();
 const AuthRouter = require('./auth');
 const UserRouter = require('./users');
 const MemberRouter = require('./members');
+const AdminRouter = require('./admins');
 const MerchandiseRouter = require('./merchandises');
 const ActivityRouter = require('./activities');
 const DonationsRouter = require('./donations');
@@ -21,6 +22,7 @@ router.get('/', (req, res) => {
 router.use('/auth', AuthRouter);
 router.use('/users', UserRouter);
 router.use('/members', MemberRouter);
+router.use('/admins', AdminRouter);
 router.use('/merchandises', MerchandiseRouter);
 router.use('/activities', ActivityRouter);
 router.use('/donations', DonationsRouter);
