@@ -53,9 +53,8 @@ const GetAllMerchandise = async (req, res) => {
 // Create new merchandise
 const CreateNewMerchandise = async (req, res) => {
   try {
-    const {body, files} = req; // Data yang dikirim dari client (request body)
-    const baseUrl = `${req.protocol}://${req.get('host')}`; 
-    const newMerchandise = await CreateMerchandise(body, files, baseUrl);
+    const {body} = req; // Data yang dikirim dari client (request body)
+    const newMerchandise = await CreateMerchandise(body);
 
     res.status(StatusCodes.CREATED).json(new BaseResponse({
       status: StatusCodes.CREATED,
@@ -75,9 +74,8 @@ const CreateNewMerchandise = async (req, res) => {
 const UpdateMerchandiseById = async (req, res) => {
   try {
     const { id } = req.params;
-    const { body, files } = req;
-    const baseUrl = `${req.protocol}://${req.get('host')}`; 
-    const updatedMerchandise = await UpdateMerchandise(id, body, files, baseUrl);
+    const { body } = req;
+    const updatedMerchandise = await UpdateMerchandise(id, body);
 
     res.status(StatusCodes.OK).json(new BaseResponse({
       status: StatusCodes.OK,

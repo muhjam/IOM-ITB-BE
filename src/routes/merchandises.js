@@ -12,8 +12,8 @@ const router = Router();
 
 router.get('', [], GetAllMerchandise);
 router.get('/:id', [], GetMerchandiseById);
-router.post('', upload.fields([{ name: 'image', maxCount: 1 }]), CreateNewMerchandise);
-router.put('/:id', upload.fields([{ name: 'image', maxCount: 1 }]), UpdateMerchandiseById);
+router.post('', [], CreateNewMerchandise);
+router.put('/:id', [], UpdateMerchandiseById);
 router.delete('/:id', [], DeleteMerchandiseById);
 
 module.exports = router;

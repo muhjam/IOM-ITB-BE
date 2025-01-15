@@ -1,15 +1,14 @@
 const { Merchandises, sequelize } = require('../../models');
 const { StatusCodes } = require('http-status-codes');
 const BaseError = require('../../schemas/responses/BaseError');
-const fs = require('fs');
 
-const CreateMerchandises = async (body, files, path) => {
+const CreateMerchandises = async (body) => {
   // Start transaction
   const transaction = await sequelize.transaction();
 
   try {
     // Validate required fields
-    const { name, price, stock } = body;
+    const { name, price, stock, image } = body;
 
     if (!name || !price || !stock) {
       throw new BaseError({
@@ -18,15 +17,11 @@ const CreateMerchandises = async (body, files, path) => {
       });
     }
 
-    // Handle image file
-    const imageFile = files && files['image'] ? files['image'][0] : null;
-    const imageFileName = imageFile ? `${path}/public/images/merchandises/${imageFile?.filename}` : null;
-
     // Create the merchandise record within a transaction
     const newMerchandise = await Merchandises.create(
       {
         name,
-        image: imageFileName, // store the file name in the database or null if no image
+        image: image, // store the file name in the database or null if no image
         description: body.description || '', // optional
         price,
         stock,
@@ -42,13 +37,6 @@ const CreateMerchandises = async (body, files, path) => {
     // Rollback the transaction in case of error
     await transaction.rollback();
 
-    // Clean up uploaded files if any errors occur
-    if (files && imageFile) {
-      const imageFilePath = path.join(__dirname, '../../public/images/merchandises', imageFile.filename);
-      if (fs.existsSync(imageFilePath)) {
-        fs.unlinkSync(imageFilePath);
-      }
-    }
     // Re-throw the error for handling
     throw new BaseError({
       status: error.status || StatusCodes.INTERNAL_SERVER_ERROR,
