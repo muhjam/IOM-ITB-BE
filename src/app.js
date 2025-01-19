@@ -13,7 +13,7 @@ const router = require('./routes/index');
 
 // Konfigurasi CORS
 const corsOptions = {
-  origin: ['http://localhost:3000', 'http://localhost:8080', 'http://localhost:8081', 'http://ag40o08cgg4ksookcoc84wko.195.110.58.17.sslip.io', 'https://www.iom-itb.id', 'https://iom-admin.vercel.app'], // Daftar domain yang diizinkan
+  origin: ['http://localhost:3000', 'http://localhost:8080', 'http://localhost:8081', 'http://ag40o08cgg4ksookcoc84wko.195.110.58.17.sslip.io', 'https://www.iom-itb.id', 'https://iom-admin.vercel.app', 'https://admin.iom-itb.id/'], // Daftar domain yang diizinkan
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'], // Metode HTTP yang diizinkan
   credentials: true // Jika kamu ingin mengirim cookies atau kredensial lainnya
 };
