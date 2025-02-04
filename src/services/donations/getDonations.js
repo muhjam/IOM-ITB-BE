@@ -51,15 +51,21 @@ const GetDonations = async ({ id = null, query = {}, search = '', isAdmin = fals
     const { rows, count } = await Donations.findAndCountAll(options);
 
     // Replace names with asterisks for donations where nameIsHidden is true
-    const processedRows = isAdmin ? rows : rows.map(donation => {
-      if (donation.options?.nameIsHidden) {
+    const processedRows = isAdmin
+    ? rows
+    : rows.map(donation => {
+        const { options } = donation;
+        const isHidden = options?.nameIsHidden;
+        const isHambaAllah = options?.isHambaAllah;
+        const name = isHidden || isHambaAllah
+          ? hideNamePattern(isHambaAllah ? 'Hamba Allah' : donation?.name)
+          : donation?.name;
+
         return {
           ...donation.toJSON(),
-          name: hideNamePattern(donation.name), // Replace name with pattern
+          name: !isHidden && isHambaAllah ? 'Hamba Allah' : name,
         };
-      }
-      return donation.toJSON();
-    });
+      });
 
     return {
       data: processedRows,

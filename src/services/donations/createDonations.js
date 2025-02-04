@@ -7,7 +7,7 @@ const CreateDonations = async (body) => {
 
   try {
     // Validate required fields
-    const { name, email, noWhatsapp, notification, proof, nameIsHidden, amount} = body;
+    const { name, email, noWhatsapp, notification, proof, nameIsHidden, amount, date, bank, isHambaAllah} = body;
 
     if(!email && !noWhatsapp){
       throw new BaseError({
@@ -33,8 +33,11 @@ const CreateDonations = async (body) => {
         notification,
         amount,
         options: {
-          nameIsHidden: nameIsHidden
+          nameIsHidden: nameIsHidden,
+          isHambaAllah:  isHambaAllah
         }, 
+        date,
+        bank
       },
       { transaction }
     );

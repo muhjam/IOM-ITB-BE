@@ -58,6 +58,14 @@ module.exports = (sequelize, DataTypes) => {
     options: {
       type: DataTypes.JSON,  // Menyimpan data tambahan dalam bentuk JSON
       allowNull: true
+    },    
+    date: {
+      type: DataTypes.DATE,
+      allowNull: true
+    },
+    bank: {
+      type: DataTypes.STRING,
+      allowNull: true
     }
   }, {
     sequelize,

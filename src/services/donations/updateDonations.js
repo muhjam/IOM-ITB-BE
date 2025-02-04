@@ -16,9 +16,9 @@ const UpdateDonations = async (id, body) => {
       });
     }
 
-    const { name, email, noWhatsapp, notification, proof, nameIsHidden, amount } = body;
+    const { name, email, noWhatsapp, notification, proof, nameIsHidden, isHambaAllah, amount, date, bank } = body;
 
-    if (!name && !email && !noWhatsapp && !notification && !proof && nameIsHidden === undefined && !amount) {
+    if (!name && !email && !noWhatsapp && !notification && !proof && nameIsHidden === undefined && !amount && !date && !bank && isHambaAllah === undefined) {
       throw new BaseError({
         status: StatusCodes.BAD_REQUEST,
         message: 'At least one field (name, email, noWhatsapp, notification, amount, proof, or nameIsHidden) must be provided for update',
@@ -35,9 +35,11 @@ const UpdateDonations = async (id, body) => {
         proof: proof || donation.proof,
         amount: amount || donation.amount,
         options: {
-          ...donation.option,
-          nameIsHidden: nameIsHidden !== undefined ? nameIsHidden : donation.option?.nameIsHidden,
+          nameIsHidden: nameIsHidden !== undefined ? nameIsHidden : donation.options?.nameIsHidden,
+          isHambaAllah: isHambaAllah !== undefined ? isHambaAllah : donation.options?.isHambaAllah,
         },
+        date: date || donation.date,
+        bank: bank || donation.bank,
       },
       {
         where: { id },
