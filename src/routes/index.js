@@ -12,6 +12,7 @@ const HelpSubmissiosRouter = require('./helpSubmissions');
 const TransactionRouter = require('./transactions');
 const fileRouter = require('./file');
 const CompetitionRouter = require('./competition');
+const DanaBantuan = require('./danaBantuan');
 
 router.get('/', (req, res) => {
   res.json({
@@ -30,5 +31,6 @@ router.use('/help-submissions', HelpSubmissiosRouter);
 router.use('/transactions', TransactionRouter);
 router.use('/file', fileRouter);
 router.use('/competition', CompetitionRouter);
+router.use('/dana-bantuan', DanaBantuan);
 
 module.exports = router;
