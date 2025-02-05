@@ -1,7 +1,5 @@
-node_modules/
 npm-debug.log
 .env
-public
 documents.env.sample
 src/public/images
 src/app/storage
