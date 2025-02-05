@@ -1,7 +1,7 @@
 npm-debug.log
 .env
+node_modules
 documents.env.sample
 src/public/images
 src/app/storage
 src/storage
-
