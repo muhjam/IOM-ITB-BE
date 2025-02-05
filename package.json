@@ -6,6 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon src/index.js",
+    "start": "nodemon index",
     "lint": "eslint --fix src",
     "create:db": "npx sequelize-cli db:create --config src/config/config.js",
     "migrate": "npx sequelize-cli db:migrate --config src/config/config.js",
