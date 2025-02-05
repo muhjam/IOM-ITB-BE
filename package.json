@@ -4,10 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "babel src -d dist",
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon src/index.js",
-    "start": "nodemon index",
     "lint": "eslint --fix src",
     "create:db": "npx sequelize-cli db:create --config src/config/config.js",
     "migrate": "npx sequelize-cli db:migrate --config src/config/config.js",
@@ -17,8 +15,7 @@
     "start:dev": "docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d",
     "stop:dev": "docker-compose -f docker-compose.yml -f docker-compose.dev.yml down",
     "start:prod": "docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d",
-    "stop:prod": "docker-compose -f docker-compose.yml -f docker-compose.prod.yml down",
-    "vercel-build": "echo hello"
+    "stop:prod": "docker-compose -f docker-compose.yml -f docker-compose.prod.yml down"
   },
   "author": "",
   "license": "ISC",
