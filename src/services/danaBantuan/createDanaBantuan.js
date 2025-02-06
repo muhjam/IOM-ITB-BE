@@ -1,4 +1,4 @@
-const { DanaBantuan, sequelize } = require('../../models');
+const { DanaBantuan, Penerima, sequelize } = require('../../models');
 const { StatusCodes } = require('http-status-codes');
 const BaseError = require('../../schemas/responses/BaseError');
 
@@ -7,19 +7,29 @@ const CreateDanaBantuan = async (body) => {
 
   try {
     // Validasi field yang diperlukan
-    const { id_penerima, jenis_bantuan, bulan, tahun, jumlah_donasi } = body;
+    const { nama, nim, program_studi, jenis_bantuan, bulan, tahun, jumlah_donasi } = body;
 
-    if (!id_penerima || !jenis_bantuan || !bulan || !tahun || !jumlah_donasi) {
+    if (!nama || !nim || !program_studi || !jenis_bantuan || !bulan || !tahun || !jumlah_donasi) {
       throw new BaseError({
         status: StatusCodes.BAD_REQUEST,
-        message: 'Semua field (id_penerima, jenis_bantuan, bulan, tahun, jumlah_donasi) wajib diisi.',
+        message: 'Semua field (nama, nim, program_studi, jenis_bantuan, bulan, tahun, jumlah_donasi) wajib diisi.',
       });
     }
 
-    // Membuat record DanaBantuan dalam transaksi
+    // Membuat record Penerima dalam transaksi
+    const newPenerima = await Penerima.create(
+      {
+        nama,
+        nim,
+        program_studi,
+      },
+      { transaction }
+    );
+
+    // Menggunakan id_penerima yang baru dibuat untuk membuat DanaBantuan
     const newDanaBantuan = await DanaBantuan.create(
       {
-        id_penerima,
+        id_penerima: newPenerima.id_penerima,  // Menggunakan id_penerima yang baru dibuat
         jenis_bantuan,
         bulan,
         tahun,
@@ -28,9 +38,22 @@ const CreateDanaBantuan = async (body) => {
       { transaction }
     );
 
+    // Mengambil data DanaBantuan dengan Penerima terkait
+    const danaBantuanWithPenerima = await DanaBantuan.findOne({
+      where: { id_dana: newDanaBantuan.id_dana },
+      include: [
+        {
+          model: Penerima,
+          as: 'penerima',  // Pastikan alias yang digunakan di sini sama dengan yang ada di model
+          attributes: ['id_penerima', 'nama', 'nim', 'program_studi'],
+        },
+      ],
+      transaction,
+    });
+
     // Commit transaksi jika berhasil
     await transaction.commit();
-    return newDanaBantuan;
+    return danaBantuanWithPenerima;
   } catch (error) {
     // Rollback transaksi jika terjadi kesalahan
     await transaction.rollback();

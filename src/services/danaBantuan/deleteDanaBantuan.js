@@ -1,52 +1,55 @@
-const { DanaBantuan, sequelize } = require('../../models');
+const { DanaBantuan, Penerima, sequelize } = require('../../models');
 const { StatusCodes } = require('http-status-codes');
-const fs = require('fs');
-const path = require('path');
+const BaseError = require('../../schemas/responses/BaseError'); // Assuming BaseError is used for errors
 
 const DeleteDanaBantuan = async (id) => {
   const transaction = await sequelize.transaction(); // Start a transaction
+
   try {
     // Find dana bantuan by id
     const danaBantuan = await DanaBantuan.findByPk(id, { transaction });
 
     // If dana bantuan not found, throw an error
     if (!danaBantuan) {
-      throw {
+      throw new BaseError({
         status: StatusCodes.NOT_FOUND,
         message: 'Dana Bantuan not found',
-      };
-    }
-
-    // Get the previous proof file path
-    const previousProofPath = danaBantuan.bukti_transfer;
-    if (previousProofPath) {
-      const previousProofFileName = path.basename(previousProofPath);
-      const previousProofFilePath = path.join(__dirname, '../../uploads', previousProofFileName);
-
-      // Check if the file exists and delete it
-      if (fs.existsSync(previousProofFilePath)) {
-        console.log('Deleting file:', previousProofFilePath); // Log file path being deleted
-        fs.unlinkSync(previousProofFilePath);
-        console.log('Deleted');
-      } else {
-        console.log('File does not exist:', previousProofFilePath); // Log if file does not exist
-      }
+      });
     }
 
     // Delete the dana bantuan record
     await danaBantuan.destroy({ transaction });
+
+    // Check if there are any other dana bantuan records related to the penerima
+    const penerima = await Penerima.findByPk(danaBantuan.id_penerima, { transaction });
+
+    // If no other DanaBantuan records exist for this Penerima, delete the Penerima record
+    const remainingDanaBantuan = await DanaBantuan.count({
+      where: { id_penerima: danaBantuan.id_penerima },
+      transaction,
+    });
+
+    if (remainingDanaBantuan === 0 && penerima) {
+      await penerima.destroy({ transaction });
+      console.log('Penerima deleted successfully');
+    }
 
     // Commit the transaction
     await transaction.commit();
 
     return {
       status: StatusCodes.OK,
-      message: 'Dana Bantuan deleted successfully',
+      message: 'Dana Bantuan and related Penerima data deleted successfully',
     };
   } catch (error) {
     // Rollback the transaction in case of error
     await transaction.rollback();
-    throw new Error(`Failed to delete Dana Bantuan: ${error.message || error}`);
+
+    // Rethrow the error using BaseError for consistent error handling
+    throw new BaseError({
+      status: error.status || StatusCodes.INTERNAL_SERVER_ERROR,
+      message: `Failed to delete Dana Bantuan: ${error.message || error}`,
+    });
   }
 };
 
