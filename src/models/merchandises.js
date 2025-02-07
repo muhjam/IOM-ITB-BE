@@ -46,7 +46,11 @@ module.exports = (sequelize, DataTypes) => {
     stock: {
       type: DataTypes.INTEGER,
       allowNull: false
-    }
+    },
+    link: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
   }, {
     sequelize,
     modelName: 'Merchandises',
