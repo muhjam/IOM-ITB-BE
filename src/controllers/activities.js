@@ -38,8 +38,8 @@ const GetActivityById = async (req, res) => {
 const GetAllActivities = async (req, res) => {
   try {
     const { search, page = 1, limit = 10 } = req.query;
-    const pageNumber = parseInt(page, 10);
-    const pageLimit = parseInt(limit, 10);
+    const pageNumber = parseInt(page);
+    const pageLimit = parseInt(limit);
     const activities = await GetActivities({
       search,
       page: pageNumber,
