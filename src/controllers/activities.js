@@ -2,24 +2,24 @@ const { StatusCodes } = require('http-status-codes');
 const BaseResponse = require('../schemas/responses/BaseResponse');
 const DataTable = require('../schemas/responses/DataTable');
 const CreateActivity = require('../services/activities/createActivities');
-const GetActivity = require('../services/activities/getActivities');
+const GetActivities = require('../services/activities/getActivities');
 const UpdateActivity = require('../services/activities/updateActivities');
 const DeleteActivity = require('../services/activities/deleteActivities');
 
 const GetActivityById = async (req, res) => {
   try {
     const { id } = req.params; // Mendapatkan id dari parameter URL
-    const activity = await GetActivity(id); // Mengambil detail aktivitas berdasarkan ID
+    const activity = await GetActivities({ id }); // Mengambil detail activity berdasarkan ID
 
-    // Jika aktivitas tidak ditemukan, kembalikan respon 404
-    if (!activity) {
+    // Jika activity tidak ditemukan, kembalikan respon 404
+    if (!activity || activity.message) {
       return res.status(StatusCodes.NOT_FOUND).json(new BaseResponse({
         status: StatusCodes.NOT_FOUND,
         message: 'Activity tidak ditemukan',
       }));
     }
 
-    // Kembalikan data aktivitas jika ditemukan
+    // Kembalikan data activity jika ditemukan
     res.status(StatusCodes.OK).json(new BaseResponse({
       status: StatusCodes.OK,
       message: 'Activity ditemukan',
@@ -37,9 +37,31 @@ const GetActivityById = async (req, res) => {
 // Get all activities
 const GetAllActivities = async (req, res) => {
   try {
-    const { search } = req.query;
-    const activities = await GetActivity(null, search);
-    res.status(StatusCodes.OK).json(new DataTable(activities.data, activities.total));
+    const { search, page = 1, limit = 10 } = req.query;
+    const pageNumber = parseInt(page, 10);
+    const pageLimit = parseInt(limit, 10);
+    const activities = await GetActivities({
+      search,
+      page: pageNumber,
+      limit: pageLimit,
+    });
+
+    const totalEntries = activities.total;
+    const totalPages = Math.ceil(totalEntries / pageLimit);
+
+    const start = (pageNumber - 1) * pageLimit + 1;
+    const end = Math.min(pageNumber * pageLimit, totalEntries);
+
+    res.status(StatusCodes.OK).json({
+      data: new DataTable(activities.data)?.data,
+      pagination: {
+        currentPage: pageNumber,
+        totalPages,
+        start,
+        end,
+        totalEntries,
+      }
+    });
   } catch (error) {
     const status = error.status || StatusCodes.INTERNAL_SERVER_ERROR;
     res.status(status).json(new BaseResponse({

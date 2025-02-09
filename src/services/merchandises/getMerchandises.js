@@ -2,28 +2,29 @@ const { Merchandises } = require('../../models');
 const { Op } = require('sequelize');
 
 // Tambahkan parameter id untuk pengecekan spesifik merchandise
-const GetMerchandises = async (id = null, query = {}, search = '') => {
+const GetMerchandises = async ({ id = null, search = '', page = 1, limit = 5 }) => {
   // Jika id disediakan, kembalikan merchandise berdasarkan id
   if (id) {
     try {
-      const merchandise = await Merchandises.findByPk(id); // Cari berdasarkan primary key (id)
+      const merchandise = await Merchandises.findByPk(id);
       if (!merchandise) {
-        throw new Error(`Merchandise dengan id ${id} tidak ditemukan`);
+        return { message: `Merchandise dengan id ${id} tidak ditemukan` };
       }
-      return merchandise; // Kembalikan detail merchandise
+      return merchandise;
     } catch (error) {
-      throw new Error(`Gagal mengambil data merchandise: ${error.message}`);
+      return { message: `Terjadi kesalahan: ${error.message}` };
     }
-  }
+    
+  }  
 
   // Logika untuk pencarian semua merchandise
-  const page = query.page || 1;  // Ambil nilai halaman dari query params (default 1)
-  const limit = query.limit || 10;  // Ambil nilai limit dari query params (default 10)
-  const offset = (page - 1) * limit;  // Hitung offset berdasarkan page dan limit
+  const pageNumber = parseInt(page) || 1;
+  const pageLimit = parseInt(limit);
+  const offset = (pageNumber - 1) * pageLimit;
   
   const options = {
     where: {},
-    limit,
+    limit: pageLimit,
     offset,
     order: [['createdAt', 'DESC']],  // Urutkan berdasarkan tanggal dibuat secara descending
   };

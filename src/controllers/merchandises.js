@@ -10,7 +10,7 @@ const DeleteMerchandise = require('../services/merchandises/deleteMerchandises')
 const GetMerchandiseById = async (req, res) => {
   try {
     const { id } = req.params; // Mendapatkan id dari parameter URL
-    const merchandise = await GetMerchandise(id); // Mengambil detail merchandise berdasarkan ID
+    const merchandise = await GetMerchandise({id}); // Mengambil detail merchandise berdasarkan ID
 
     // Jika merchandise tidak ditemukan, kembalikan respon 404
     if (!merchandise) {
@@ -38,9 +38,31 @@ const GetMerchandiseById = async (req, res) => {
 // Get all merchandise
 const GetAllMerchandise = async (req, res) => {
   try {
-    const { search } = req.query;
-    const merchandise = await GetMerchandise(null, search);
-    res.status(StatusCodes.OK).json(new DataTable(merchandise.data, merchandise.total));
+    const { search, page = 1, limit = 10 } = req.query;
+    const pageNumber = parseInt(page, 10);
+    const pageLimit = parseInt(limit, 10);
+    const merchandise = await GetMerchandise({
+      search,
+      page: pageNumber,
+      limit: pageLimit,
+    });
+
+    const totalEntries = merchandise.total;
+    const totalPages = Math.ceil(totalEntries / pageLimit);
+
+    const start = (pageNumber - 1) * pageLimit + 1;
+    const end = Math.min(pageNumber * pageLimit, totalEntries);
+
+    res.status(StatusCodes.OK).json({
+      data: new DataTable(merchandise.data)?.data,
+      pagination: {
+        currentPage: pageNumber,
+        totalPages,
+        start,
+        end,
+        totalEntries,
+      }
+    });
   } catch (error) {
     const status = error.status || StatusCodes.INTERNAL_SERVER_ERROR;
     res.status(status).json(new BaseResponse({
