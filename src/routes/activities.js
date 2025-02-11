@@ -1,6 +1,6 @@
 const { Router } = require('express');
 const {
-  GetActivityById,
+  GetActivityBySlug,
   GetAllActivities,
   CreateNewActivity,
   UpdateActivityById,
@@ -11,7 +11,7 @@ const {
 const router = Router();
 
 router.get('', [], GetAllActivities);
-router.get('/:id', [], GetActivityById);
+router.get('/:slug', [], GetActivityBySlug);
 router.post('', JWTValidation, CreateNewActivity);
 router.put('/:id', JWTValidation, UpdateActivityById);
 router.delete('/:id', JWTValidation, DeleteActivityById);

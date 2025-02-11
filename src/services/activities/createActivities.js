@@ -3,41 +3,48 @@ const { StatusCodes } = require('http-status-codes');
 const BaseError = require('../../schemas/responses/BaseError');
 
 const CreateActivities = async (body, path) => {
-  // Start transaction
   const transaction = await sequelize.transaction();
-  // Handle image file
+
   try {
-    // Validate required fields
-    const { title, date, image } = body;
+    const { title, date, image, url } = body;
 
     if (!title || !date || !image) {
       throw new BaseError({
         status: StatusCodes.BAD_REQUEST,
-        message: 'Title and date are required fields',
+        message: 'Judul, tanggal, dan gambar wajib diisi.',
       });
     }
 
-    // Create the activity record within a transaction
+    // Cek apakah URL sudah digunakan
+    if (url) {
+      const existingActivity = await Activities.findOne({ where: { url } });
+      if (existingActivity) {
+        throw new BaseError({
+          status: StatusCodes.CONFLICT,
+          message: 'URL sudah digunakan. Silakan gunakan URL yang berbeda.',
+        });
+      }
+    }
+
     const newActivity = await Activities.create(
       {
         title,
-        image, // store the file name in the database or null if no image
-        description: body.description || '', // optional
+        image,
+        description: body.description || '',
         date,
-        url: body.url || '', // optional
+        url: url || '',
       },
       { transaction }
     );
 
-    // Commit the transaction
     await transaction.commit();
-
     return newActivity;
   } catch (error) {
-    // Re-throw the error for handling
+    await transaction.rollback(); // Rollback transaksi jika terjadi kesalahan
+
     throw new BaseError({
       status: error.status || StatusCodes.INTERNAL_SERVER_ERROR,
-      message: `Failed to create activity: ${error.message || error}`,
+      message: `Gagal membuat aktivitas: ${error.message || error}`,
     });
   }
 };

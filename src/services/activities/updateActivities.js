@@ -13,7 +13,7 @@ const UpdateActivities = async (id, body) => {
     if (!activity) {
       throw new BaseError({
         status: StatusCodes.NOT_FOUND,
-        message: 'Activity not found',
+        message: 'Aktivitas tidak ditemukan.',
       });
     }
 
@@ -22,18 +22,29 @@ const UpdateActivities = async (id, body) => {
     if (!title && !date && !description && !url && !image) {
       throw new BaseError({
         status: StatusCodes.BAD_REQUEST,
-        message: 'At least one of title, date, or image must be provided for update',
+        message: 'Setidaknya salah satu dari judul, tanggal, atau gambar harus diisi untuk pembaruan.',
       });
     }
 
-    // Update activity with new data
+    // Cek apakah URL sudah digunakan oleh aktivitas lain
+    if (url && url !== activity.url) {
+      const existingActivity = await Activities.findOne({ where: { url } });
+      if (existingActivity) {
+        throw new BaseError({
+          status: StatusCodes.CONFLICT,
+          message: 'URL sudah digunakan. Silakan gunakan URL yang berbeda.',
+        });
+      }
+    }
+
+    // Perbarui aktivitas dengan data baru
     const updatedActivity = await Activities.update(
       {
         title: title || activity.title,
         image: image || activity.image,
-        description: body.description || activity.description,
+        description: description || activity.description,
         date: date !== undefined ? date : activity.date,
-        url: body.url !== undefined ? body.url : activity.url,
+        url: url !== undefined ? url : activity.url,
       },
       {
         where: { id },
@@ -45,10 +56,11 @@ const UpdateActivities = async (id, body) => {
 
     return updatedActivity;
   } catch (error) {
+    await transaction.rollback(); // Rollback transaksi jika terjadi kesalahan
 
     throw new BaseError({
       status: error.status || StatusCodes.INTERNAL_SERVER_ERROR,
-      message: `Failed to update activity: ${error.message || error}`,
+      message: `Gagal memperbarui aktivitas: ${error.message || error}`,
     });
   }
 };

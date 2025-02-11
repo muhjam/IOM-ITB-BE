@@ -6,10 +6,10 @@ const GetActivities = require('../services/activities/getActivities');
 const UpdateActivity = require('../services/activities/updateActivities');
 const DeleteActivity = require('../services/activities/deleteActivities');
 
-const GetActivityById = async (req, res) => {
+const GetActivityBySlug = async (req, res) => {
   try {
-    const { id } = req.params; // Mendapatkan id dari parameter URL
-    const activity = await GetActivities({ id }); // Mengambil detail activity berdasarkan ID
+    const { slug } = req.params; // Mendapatkan id dari parameter URL
+    const activity = await GetActivities({ slug }); // Mengambil detail activity berdasarkan ID
 
     // Jika activity tidak ditemukan, kembalikan respon 404
     if (!activity || activity.message) {
@@ -132,7 +132,7 @@ const DeleteActivityById = async (req, res) => {
 };
 
 module.exports = {
-  GetActivityById,
+  GetActivityBySlug,
   GetAllActivities,
   CreateNewActivity,
   UpdateActivityById,
