@@ -60,14 +60,12 @@ const GetDonationByEmail = async (req, res) => {
 
 const GetAllDonations = async (req, res) => {
   try {
-    const { search, page = 1, limit = 10 } = req.query;  // Set default page and limit
+    const { search, page = 1, limit = 10 } = req.query;
     const isAdmin = req.path === "/admin";
 
-    // Convert `page` and `limit` to integers
     const pageNumber = parseInt(page, 10);
     const pageLimit = parseInt(limit, 10);
 
-    // Get donations data
     const donations = await GetDonation({
       query: req.query,
       search,

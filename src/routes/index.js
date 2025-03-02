@@ -8,6 +8,7 @@ const AdminRouter = require('./admins');
 const MerchandiseRouter = require('./merchandises');
 const ActivityRouter = require('./activities');
 const DonationsRouter = require('./donations');
+const PendataanAnggotaRouter = require('./pendataanAnggota');
 const HelpSubmissiosRouter = require('./helpSubmissions');
 const TransactionRouter = require('./transactions');
 const fileRouter = require('./file');
@@ -23,6 +24,7 @@ router.get('/', (req, res) => {
 router.use('/auth', AuthRouter);
 router.use('/users', UserRouter);
 router.use('/members', MemberRouter);
+router.use('/pendataan-anggota', PendataanAnggotaRouter);
 router.use('/admins', AdminRouter);
 router.use('/merchandises', MerchandiseRouter);
 router.use('/activities', ActivityRouter);
