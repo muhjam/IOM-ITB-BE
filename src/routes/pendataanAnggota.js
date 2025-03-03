@@ -4,10 +4,11 @@ const {
   GetAllPendataanAnggota,
 } = require('../controllers/pendataanAnggota');
 const upload = require('../middlewares/multer');
+const JWTValidation = require('../middlewares/auth');
 
 const router = Router();
 
-router.get('', [], GetAllPendataanAnggota);
-router.get('/:id', [], GetPendataanAnggotaById);
+router.get('', JWTValidation, GetAllPendataanAnggota);
+router.get('/:id', JWTValidation, GetPendataanAnggotaById);
 
 module.exports = router;

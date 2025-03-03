@@ -78,7 +78,6 @@ const GetAllPendataanAnggota = async (req, res) => {
   }
 };
 
-
 module.exports = {
   GetPendataanAnggotaById,
   GetAllPendataanAnggota
