@@ -4,11 +4,11 @@ const BaseResponse = require('../schemas/responses/BaseResponse');
 const DataTable = require('../schemas/responses/DataTable');
 const { getUrlExcel } = require('../utils/excel');
 
-const GetPendataanAnggotaById = async (req, res) => {
+const GetExcelById = async (req, res, next, token) => {
   try {
     const { id } = req.params;
     const url = await getUrlExcel();
-    const response = await axios.get(`${url}/WFf2z4y8YIrf-YfNHgiVJ`);
+    const response = await axios.get(`${url}/${token}`);
     const anggota = response.data.find((item) => item.id === id);
 
     if (!anggota) {
@@ -31,14 +31,14 @@ const GetPendataanAnggotaById = async (req, res) => {
   }
 };
 
-const GetAllPendataanAnggota = async (req, res) => {
+const GetAllExcel = async (req, res, next, token) => {
   try {
     const { search, page = 1, limit = 10 } = req.query;
     const pageNumber = parseInt(page, 10);
     const pageLimit = parseInt(limit, 10);
     
     const url = await getUrlExcel();
-    const response = await axios.get(`${url}/WFf2z4y8YIrf-YfNHgiVJ`);
+    const response = await axios.get(`${url}/${token}`);
     let anggotaList = response.data;
 
     // Filter data berdasarkan pencarian jika ada
@@ -48,7 +48,12 @@ const GetAllPendataanAnggota = async (req, res) => {
       );
     }
 
-    // Tambahkan nomor urut berdasarkan indeks di array
+    // Urutkan berdasarkan "Submitted at" (terbaru ke terlama)
+    anggotaList = anggotaList.sort((a, b) => 
+      new Date(b["Submitted at"]) - new Date(a["Submitted at"])
+    );
+
+    // Tambahkan nomor urut berdasarkan indeks di array setelah sorting
     anggotaList = anggotaList.map((item, index) => ({
       ...item,
       no: index + 1, // Nomor urut mulai dari 1
@@ -79,6 +84,6 @@ const GetAllPendataanAnggota = async (req, res) => {
 };
 
 module.exports = {
-  GetPendataanAnggotaById,
-  GetAllPendataanAnggota
+  GetExcelById,
+  GetAllExcel
 };
