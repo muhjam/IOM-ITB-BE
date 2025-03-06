@@ -11,38 +11,47 @@ const hideNamePattern = (name) => {
 
 // Add an id parameter for specific donation retrieval
 const GetDonations = async ({ id = null, query = {}, search = '', isAdmin = false }) => {
-  // If id is provided, return the donation based on the id
   if (id) {
     try {
-      const donation = await Donations.findByPk(id); // Find by primary key (id)
+      const donation = await Donations.findByPk(id);
       if (!donation) {
         throw new Error(`Donation with id ${id} not found`);
       }
 
-      // Check if the name should be hidden
       if (donation.options?.nameIsHidden && !isAdmin) {
-        donation.name = hideNamePattern(donation.name); // Replace name with pattern
+        donation.name = hideNamePattern(donation.name);
       }
 
-      return donation; // Return donation details
+      return donation;
     } catch (error) {
       throw new Error(`Failed to retrieve donation data: ${error.message}`);
     }
   }
+
+  const page = parseInt(query.page) || 1;
+  const limit = parseInt(query.limit) || 10;
+  const offset = (page - 1) * limit;
+
+  let orderBy = [['createdAt', 'DESC']];
   
-  // Logic for retrieving all donations
-  const page = parseInt(query.page) || 1;  // Get page number from query params (default is 1)
-  const limit = parseInt(query.limit) || 10;  // Get limit from query params (default is 10)
-  const offset = (page - 1) * limit;  // Calculate offset based on page and limit
-  
+  if (!isAdmin) {
+    orderBy = [['date', 'DESC']];
+  } else if (query.orderBy) {
+    const allowedFields = ['createdAt', 'amount', 'name', 'date'];
+    const orderDirection = query.sort ?? 'DESC';
+    
+    if (allowedFields.includes(query.orderBy)) {
+      orderBy = [[query.orderBy, orderDirection]];
+    }
+  }
+
   const options = {
     where: {},
     limit,
     offset,
-    order: [['createdAt', 'DESC']],  // Sort by creation date in descending order
+    order: orderBy,
   };
 
-  // If there's a search term, use it to filter by donor's name
   if (search) {
     options.where.name = { [Op.like]: `%${search}%` };
   }
@@ -50,22 +59,21 @@ const GetDonations = async ({ id = null, query = {}, search = '', isAdmin = fals
   try {
     const { rows, count } = await Donations.findAndCountAll(options);
 
-    // Replace names with asterisks for donations where nameIsHidden is true
     const processedRows = isAdmin
-    ? rows
-    : rows.map(donation => {
-        const { options } = donation;
-        const isHidden = options?.nameIsHidden;
-        const isHambaAllah = options?.isHambaAllah;
-        const name = isHidden || isHambaAllah
-          ? hideNamePattern(isHambaAllah ? 'Hamba Allah' : donation?.name)
-          : donation?.name;
+      ? rows
+      : rows.map(donation => {
+          const { options } = donation;
+          const isHidden = options?.nameIsHidden;
+          const isHambaAllah = options?.isHambaAllah;
+          const name = isHidden || isHambaAllah
+            ? hideNamePattern(isHambaAllah ? 'Hamba Allah' : donation?.name)
+            : donation?.name;
 
-        return {
-          ...donation.toJSON(),
-          name: !isHidden && isHambaAllah ? 'Hamba Allah' : name,
-        };
-      });
+          return {
+            ...donation.toJSON(),
+            name: !isHidden && isHambaAllah ? 'Hamba Allah' : name,
+          };
+        });
 
     return {
       data: processedRows,
