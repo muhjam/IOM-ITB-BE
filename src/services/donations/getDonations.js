@@ -3,10 +3,7 @@ const { Op } = require('sequelize');
 
 // Utility function to hide words with asterisks
 const hideNamePattern = (name) => {
-  return name
-    .split(' ')
-    .map(word => word[0] + '*'.repeat(word.length - 1))
-    .join(' ');
+  return name?.split(' ')?.map(word => word ? word[0] + '*'.repeat(word.length - 1) : '')?.join(' ');
 };
 
 // Add an id parameter for specific donation retrieval
@@ -58,22 +55,20 @@ const GetDonations = async ({ id = null, query = {}, search = '', isAdmin = fals
 
   try {
     const { rows, count } = await Donations.findAndCountAll(options);
-
     const processedRows = isAdmin
-      ? rows
-      : rows.map(donation => {
-          const { options } = donation;
-          const isHidden = options?.nameIsHidden;
-          const isHambaAllah = options?.isHambaAllah;
-          const name = isHidden || isHambaAllah
-            ? hideNamePattern(isHambaAllah ? 'Hamba Allah' : donation?.name)
-            : donation?.name;
-
-          return {
-            ...donation.toJSON(),
-            name: !isHidden && isHambaAllah ? 'Hamba Allah' : name,
-          };
-        });
+    ? rows
+    : rows.map(donation => {
+        const { options } = donation;
+        const isHidden = options?.nameIsHidden;
+        const isHambaAllah = options?.isHambaAllah;
+        const name = isHidden || isHambaAllah
+          ? hideNamePattern(isHambaAllah ? 'Hamba Allah' : donation?.name)
+          : donation?.name;
+        return {
+          ...donation.toJSON(),
+          name: !isHidden && isHambaAllah ? 'Hamba Allah' : name,
+        };
+      });
 
     return {
       data: processedRows,
