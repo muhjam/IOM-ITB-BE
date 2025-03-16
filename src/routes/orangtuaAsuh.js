@@ -7,7 +7,7 @@ const JWTValidation = require('../middlewares/auth');
 
 const router = Router();
 
-const token = "lVWlH2wOwwAWQuL6wFTap"
+const token = "user_content_key=AehSKLj0GIrn7P_ALY_cYog7jvWs_ht3nuYyWmnR40CyWcO-_GOzjd3JFd6OvFH-m60IYtsTojDVChrMPG8WNAZmYC-UewiS4_xSEdm7Ri_tYdQekLOQYqgz85o4IPxG_kDOrQhqewXH72nRkMm5clpz6rq7GLsph6uOfsdBj9Mk0EGVxroPJqP2Y3ytYhOA3TOc5cNCUKAQsya-Cxh2HKwrd_QSwvnj4mWOo29i8L2XMNGqJe8Pyybz9brXVmz1CdZdVQoPmBLGLO92flVtqXYM6G3BnIPgIBo00gAIY8F4&lib=MHbVxRf8x76npGcRu7Ntqv-PvG3BvuGoP"
 
 router.get('', JWTValidation, (req, res, next) => {
   GetAllExcel(req, res, next, token);

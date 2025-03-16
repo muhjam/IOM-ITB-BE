@@ -99,7 +99,6 @@ const GetAllDonations = async (req, res) => {
   }
 };
 
-
 const CreateNewDonation = async (req, res) => {
   try {
     const { body } = req;

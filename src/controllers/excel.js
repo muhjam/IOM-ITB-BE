@@ -38,8 +38,8 @@ const GetAllExcel = async (req, res, next, token) => {
     const pageLimit = parseInt(limit, 10);
     
     const url = await getUrlExcel();
-    const response = await axios.get(`${url}/${token}`);
-    let anggotaList = response.data;
+    const response = await axios.get(`${url}?${token}`);
+    let anggotaList = response.data.data;
 
     // Filter data berdasarkan pencarian jika ada
     if (search) {
